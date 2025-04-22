@@ -1,8 +1,6 @@
 import React from 'react'
 import './App.css'
-import NavBar from './pages/NavBar';
-
-
+import Home from './pages/Home';
 
 // this is the main component of the project
 function App() {
@@ -10,7 +8,7 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-       <NavBar/>
+        <Home/>
       </header>
       
     </div>
