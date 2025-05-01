@@ -1,17 +1,45 @@
-import React from 'react'
-import './App.css'
-import Home from './pages/Home';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route,useLocation } from 'react-router-dom';
+import './App.css';
 
-// this is the main component of the project
-function App() {
-  console.log('App component loaded');
+// Pages
+import Home from './pages/Home';
+import About from './pages/About';
+import Services from './pages/Services';
+import Contact from './pages/Contactus';
+import Login from './pages/Login';
+
+// Components
+import NavBar from './components/NavBar';
+import Footer from './components/Footer';
+
+// This component handles the actual routing
+function AppContent() {
+  const location = useLocation();
+  const hideLayout = location.pathname === '/login';
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <Home/>
-      </header>
-      
-    </div>
-  )
+    <>
+      {!hideLayout && <NavBar />}
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/login" element={<Login />} />
+      </Routes>
+      {!hideLayout && <Footer />}
+    </>
+  );
 }
-export default App
+
+// Router wrapper
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+export default App;
