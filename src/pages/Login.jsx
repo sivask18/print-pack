@@ -1,13 +1,72 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReCAPTCHA from "react-google-recaptcha";
 
 const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    contactNo: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [captchaToken, setCaptchaToken] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleCaptcha = (value) => {
+    setCaptchaToken(value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    if (isSignUp) {
+      const { name, contactNo, email, password, confirmPassword } = formData;
+
+      if (!name || !contactNo || !email || !password || !confirmPassword) {
+        alert("Please fill in all fields!");
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert("Passwords do not match!");
+        return;
+      }
+
+      if (!captchaToken) {
+        alert("Please complete the CAPTCHA!");
+        return;
+      }
+
+      console.log("User data info:", formData);
+
+      alert("Registration successful!");
+
+      setFormData({
+        name: "",
+        contactNo: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      setCaptchaToken(null);
+      setShowPassword(false);
+      setShowConfirmPassword(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="flex flex-col md:flex-row items-center justify-center gap-10 w-full max-w-5xl p-6">
-
         {/* Left Side */}
         <motion.div
           className="text-center md:text-left max-w-md"
@@ -21,7 +80,7 @@ const LoginPage = () => {
           </p>
         </motion.div>
 
-        {/* Right Side - Animated Form */}
+        {/* Right Side */}
         <AnimatePresence mode="wait">
           <motion.div
             key={isSignUp ? "signup" : "login"}
@@ -35,17 +94,23 @@ const LoginPage = () => {
               {isSignUp ? "Create a New Account" : "Login to your Account"}
             </h2>
 
-            <form className="space-y-4">
+            <form className="space-y-4" onSubmit={handleSubmit}>
               {isSignUp && (
                 <>
                   <input
                     type="text"
+                    name="name"
                     placeholder="Full Name"
+                    value={formData.name}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                   <input
-                    type="tel"
+                    type="text"
+                    name="contactNo"
                     placeholder="Mobile Number"
+                    value={formData.contactNo}
+                    onChange={handleChange}
                     className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
                 </>
@@ -53,24 +118,60 @@ const LoginPage = () => {
 
               <input
                 type="email"
+                name="email"
                 placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
               />
 
-              <input
-                type="password"
-                placeholder="Password"
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              {isSignUp && (
+              {/* Password Field with Eye Icon */}
+              <div className="relative">
                 <input
-                  type="password"
-                  placeholder="Confirm Password"
-                  className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <span
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                >
+                  {showPassword ? "🙈" : "👁️"}
+                </span>
+              </div>
+
+              {/* Confirm Password Field */}
+              {isSignUp && (
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <span
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                  >
+                    {showConfirmPassword ? "🙈" : "👁️"}
+                  </span>
+                </div>
+              )}
+
+              {/* CAPTCHA */}
+              {isSignUp && (
+                <ReCAPTCHA
+                  sitekey="6LcYZV4rAAAAAJh8mKaMn5sLQhCtMx5ijeXGJtRO"
+                  onChange={handleCaptcha}
                 />
               )}
 
+              {/* Submit Button */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
