@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
+
 const HeroSection = () => {
   return (
     <section className="w-full py-20 bg-gradient-to-r from-indigo-50 to-white">
@@ -35,7 +36,7 @@ const HeroSection = () => {
         >
           <div className="w-full h-64 md:h-96 bg-gray-200 rounded-xl flex items-center justify-center shadow-inner">
             <img
-              src="https://www.zppdubai.ae/images/rev/slider04-img05.png"
+              src="/public/assets/printing-solution-service.jpg"
               alt="Printing Machine"
               className="object-contain h-full"
             />

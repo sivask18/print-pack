@@ -26,10 +26,12 @@ const LoginPage = () => {
     setCaptchaToken(value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isSignUp) {
+      console.log("Sign Up Form Data:", formData);
+
       const { name, contactNo, email, password, confirmPassword } = formData;
 
       if (!name || !contactNo || !email || !password || !confirmPassword) {
@@ -47,20 +49,37 @@ const LoginPage = () => {
         return;
       }
 
-      console.log("User data info:", formData);
+      try {
+        console.log("Submitting Sign Up Form...");
 
-      alert("Registration successful!");
+        const response = await fetch("http://localhost:5000/signup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
 
-      setFormData({
-        name: "",
-        contactNo: "",
-        email: "",
-        password: "",
-        confirmPassword: "",
-      });
-      setCaptchaToken(null);
-      setShowPassword(false);
-      setShowConfirmPassword(false);
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message || "Registration successful!");
+
+          setFormData({
+            name: "",
+            contactNo: "",
+            email: "",
+            password: "",
+            confirmPassword: "",
+          });
+          setCaptchaToken(null);
+          setShowPassword(false);
+          setShowConfirmPassword(false);
+        } else {
+          alert(result.message || "Something went wrong.");
+        }
+      } catch (err) {
+        console.error("Error submitting form:", err);
+        alert("Server error. Please try again.");
+      }
     }
   };
 
@@ -158,7 +177,7 @@ const LoginPage = () => {
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
                   >
-                    {showConfirmPassword ? "🙈" : "👁️"}
+                    {showConfirmPassword ? "" : ""}
                   </span>
                 </div>
               )}
