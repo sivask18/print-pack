@@ -6,7 +6,7 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
-    contactNo: "",
+    mobileno: "",
     email: "",
     password: "",
     confirmPassword: "",
@@ -32,9 +32,9 @@ const LoginPage = () => {
     if (isSignUp) {
       console.log("Sign Up Form Data:", formData);
 
-      const { name, contactNo, email, password, confirmPassword } = formData;
+      const { name, mobileno, email, password, confirmPassword } = formData;
 
-      if (!name || !contactNo || !email || !password || !confirmPassword) {
+      if (!name || !mobileno || !email || !password || !confirmPassword) {
         alert("Please fill in all fields!");
         return;
       }
@@ -65,7 +65,7 @@ const LoginPage = () => {
 
           setFormData({
             name: "",
-            contactNo: "",
+            mobileno: "",
             email: "",
             password: "",
             confirmPassword: "",
@@ -126,9 +126,9 @@ const LoginPage = () => {
                   />
                   <input
                     type="text"
-                    name="contactNo"
+                    name="mobileno"
                     placeholder="Mobile Number"
-                    value={formData.contactNo}
+                    value={formData.mobileno}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   />
