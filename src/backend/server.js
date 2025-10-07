@@ -60,7 +60,7 @@ app.post("/users", async (req, res) => {
 
     console.log("Inserted row:", result.rows[0]);
     res.status(201).json({
-      message: "Data inserted successfully!",
+      message: "User registered successfully",
       data: result.rows[0],
     });
   } catch (err) {
@@ -68,6 +68,42 @@ app.post("/users", async (req, res) => {
     res.status(500).json({ error: "Database insertion failed" });
   }
 });
+
+
+// ✅ LOGIN API
+app.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    // ✅ Fetch user from database
+    const query = "SELECT * FROM public.cust_table WHERE email = $1 AND password = $2";
+    const result = await pool.query(query, [email, password]);
+
+    if (result.rows.length > 0) {
+      // ✅ Login success
+      const user = result.rows[0];
+      console.log("Login successful for:", user.email);
+      res.status(200).json({
+        message: "Login successful!",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      });
+    } else {
+      res.status(401).json({ message: "Invalid email or password" });
+    }
+  } catch (err) {
+    console.error("Error during login:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 
 app.listen(5000, () => {
   console.log("Server running on http://localhost:5000");

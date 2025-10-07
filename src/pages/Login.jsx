@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
+
 
 const LoginPage = () => {
+  const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -29,7 +32,43 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (isSignUp) {
+    if (!isSignUp) {
+      console.log("Login Page - Functionality to be implemented");
+
+      const { email, password } = formData;
+
+      if (!email || !password) {
+        alert("Please fill in all fields!");
+        return;
+      }
+
+      try {
+        const response = await fetch("http://localhost:5000/login", {
+          method: "POST", // ✅ Use POST, not GET
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }), // ✅ Send data properly
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          localStorage.setItem("user", JSON.stringify(result.user));
+          alert(result.message || "Login successful!");
+          console.log("User data:", result.user); // optional
+          // You can redirect or store login state here
+          setFormData({
+            email: "",
+            password: "",
+          });
+          navigate("/"); // Redirect to home or dashboard
+        } else {
+          alert(result.message || "Invalid login credentials.");
+        }
+      } catch (err) {
+        console.error("Error logging in:", err);
+        alert("Server error. Please try again.");
+      }
+    } else if (isSignUp) {
       console.log("Sign Up Form Data:", formData);
 
       const { name, mobileno, email, password, confirmPassword } = formData;
