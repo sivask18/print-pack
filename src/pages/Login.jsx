@@ -3,10 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
 import { useNavigate } from "react-router-dom";
 
-
 const LoginPage = () => {
   const navigate = useNavigate();
   const [isSignUp, setIsSignUp] = useState(false);
+  const [isForgot, setIsForgot] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     mobileno: "",
@@ -14,9 +14,16 @@ const LoginPage = () => {
     password: "",
     confirmPassword: "",
   });
+  const [otp, setOtp] = useState("");
   const [captchaToken, setCaptchaToken] = useState(null);
+  const [otpSent, setOtpSent] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [changePasswordForm, setChangePasswordForm] = useState(false);
+  const [oldPassword, setOldPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmResetPassword, setConfirmResetPassword] = useState("");
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -29,14 +36,97 @@ const LoginPage = () => {
     setCaptchaToken(value);
   };
 
+  const handleResetPassword = async () => {
+    if (newPassword !== confirmResetPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:5000/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          oldPassword,
+          newPassword,
+          confirmPassword: confirmResetPassword,
+        }),
+      });
+
+      const result = await res.json();
+      if (res.ok) {
+        alert("Password updated successfully! Check your email for confirmation.");
+        setIsForgot(false);
+        setShowChangePassword(false);
+        setChangePasswordForm(false);
+        setOtpSent(false);
+        setOtp("");
+        setOldPassword("");
+        setNewPassword("");
+        setConfirmResetPassword("");
+        setFormData((prev) => ({ ...prev, email: "" }));
+      } else {
+        alert(result.message || "Failed to update password.");
+      }
+    } catch (err) {
+      alert("Server error.");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (isForgot) {
+      if (!otpSent && !showChangePassword && !changePasswordForm) {
+        // Step 1: Send OTP
+        try {
+          const res = await fetch("http://localhost:5000/send-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: formData.email }),
+          });
+
+          const result = await res.json();
+          if (res.ok) {
+            alert("OTP sent successfully to your registered email.");
+            setOtpSent(true);
+          } else {
+            alert(result.message || "Failed to send OTP.");
+          }
+        } catch (err) {
+          alert("Server error. Try again later.");
+        }
+      } else if (otpSent) {
+        // Step 2: Verify OTP
+        try {
+          const res = await fetch("http://localhost:5000/verify-otp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: formData.email, otp }),
+          });
+
+          const result = await res.json();
+          if (res.ok) {
+            setOtpSent(false);
+            setShowChangePassword(true);
+            setOtp("");
+          } else {
+            alert(result.message || "Invalid OTP.");
+          }
+        } catch (err) {
+          alert("Server error. Try again later.");
+        }
+      } else if (changePasswordForm) {
+        // Handle change password form submit
+        await handleResetPassword();
+      }
+      return;
+    }
+
+    // ---------------------- LOGIN SECTION ----------------------
     if (!isSignUp) {
-      console.log("Login Page - Functionality to be implemented");
-
       const { email, password } = formData;
-
       if (!email || !password) {
         alert("Please fill in all fields!");
         return;
@@ -44,33 +134,28 @@ const LoginPage = () => {
 
       try {
         const response = await fetch("http://localhost:5000/login", {
-          method: "POST", // ✅ Use POST, not GET
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }), // ✅ Send data properly
+          body: JSON.stringify({ email, password }),
         });
 
-        const result = await response.json();
-
+        const text = await response.text();
+        const result = JSON.parse(text);
         if (response.ok) {
-          localStorage.setItem("user", JSON.stringify(result.user));
           alert(result.message || "Login successful!");
-          console.log("User data:", result.user); // optional
-          // You can redirect or store login state here
-          setFormData({
-            email: "",
-            password: "",
-          });
-          navigate("/"); // Redirect to home or dashboard
+          localStorage.setItem("user", JSON.stringify(result.user));
+          setFormData({ email: "", password: "" });
+          navigate("/");
         } else {
-          alert(result.message || "Invalid login credentials.");
+          alert(result.message || "Invalid credentials");
         }
       } catch (err) {
-        console.error("Error logging in:", err);
-        alert("Server error. Please try again.");
+        alert("Server error. Please try again later.");
       }
-    } else if (isSignUp) {
-      console.log("Sign Up Form Data:", formData);
+    }
 
+    // ---------------------- SIGNUP SECTION ----------------------
+    else {
       const { name, mobileno, email, password, confirmPassword } = formData;
 
       if (!name || !mobileno || !email || !password || !confirmPassword) {
@@ -89,19 +174,16 @@ const LoginPage = () => {
       }
 
       try {
-        console.log("Submitting Sign Up Form...");
-
-        const response = await fetch("http://localhost:5000/users", {
+        const response = await fetch("http://localhost:5000/register", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
 
-        const result = await response.json();
-
+        const text = await response.text();
+        const result = JSON.parse(text);
         if (response.ok) {
           alert(result.message || "Registration successful!");
-
           setFormData({
             name: "",
             mobileno: "",
@@ -109,15 +191,12 @@ const LoginPage = () => {
             password: "",
             confirmPassword: "",
           });
-          setCaptchaToken(null);
-          setShowPassword(false);
-          setShowConfirmPassword(false);
+          setIsSignUp(false);
         } else {
           alert(result.message || "Something went wrong.");
         }
       } catch (err) {
-        console.error("Error submitting form:", err);
-        alert("Server error. Please try again.");
+        alert("Server error. Please try again later.");
       }
     }
   };
@@ -125,7 +204,6 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="flex flex-col md:flex-row items-center justify-center gap-10 w-full max-w-5xl p-6">
-        {/* Left Side */}
         <motion.div
           className="text-center md:text-left max-w-md"
           initial={{ opacity: 0, x: -50 }}
@@ -138,10 +216,9 @@ const LoginPage = () => {
           </p>
         </motion.div>
 
-        {/* Right Side */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={isSignUp ? "signup" : "login"}
+            key={isForgot ? "forgot" : isSignUp ? "signup" : "login"}
             className="w-full max-w-md bg-white p-8 rounded-xl shadow-lg"
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
@@ -149,99 +226,212 @@ const LoginPage = () => {
             transition={{ duration: 0.4 }}
           >
             <h2 className="text-2xl font-bold text-gray-800 text-center mb-6">
-              {isSignUp ? "Create a New Account" : "Login to your Account"}
+              {isForgot
+                ? "Forgot Password"
+                : isSignUp
+                ? "Create a New Account"
+                : "Login to your Account"}
             </h2>
 
             <form className="space-y-4" onSubmit={handleSubmit}>
-              {isSignUp && (
+              {isForgot ? (() => {
+                if (!otpSent && !showChangePassword && !changePasswordForm) {
+                  return (
+                    <>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your registered email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 font-semibold rounded-lg transition"
+                      >
+                        Send OTP
+                      </motion.button>
+                    </>
+                  );
+                } else if (otpSent) {
+                  return (
+                    <>
+                      <input
+                        type="email"
+                        name="email"
+                        placeholder="Enter your registered email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                        readOnly
+                      />
+                      <input
+                        type="text"
+                        placeholder="Enter OTP"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 font-semibold rounded-lg transition"
+                      >
+                        Verify OTP
+                      </motion.button>
+                    </>
+                  );
+                } else if (showChangePassword) {
+                  return (
+                    <>
+                      <p className="text-center text-gray-600">Do you want to change your password?</p>
+                      <div className="flex justify-between mt-4">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowChangePassword(false);
+                            setChangePasswordForm(true);
+                          }}
+                          className="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg"
+                        >
+                          Yes
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setShowChangePassword(false);
+                            setIsForgot(false);
+                          }}
+                          className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg"
+                        >
+                          No
+                        </button>
+                      </div>
+                    </>
+                  );
+                } else if (changePasswordForm) {
+                  return (
+                    <>
+                      <input
+                        type="password"
+                        placeholder="Old Password"
+                        value={oldPassword}
+                        onChange={(e) => setOldPassword(e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <input
+                        type="password"
+                        placeholder="New Password"
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <input
+                        type="password"
+                        placeholder="Confirm New Password"
+                        value={confirmResetPassword}
+                        onChange={(e) => setConfirmResetPassword(e.target.value)}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="submit"
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 font-semibold rounded-lg transition"
+                      >
+                        Change Password
+                      </motion.button>
+                    </>
+                  );
+                }
+                return null;
+              })() : (
                 <>
+                  {isSignUp && (
+                    <>
+                      <input
+                        type="text"
+                        name="name"
+                        placeholder="Full Name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                      <input
+                        type="text"
+                        name="mobileno"
+                        placeholder="Mobile Number"
+                        value={formData.mobileno}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </>
+                  )}
                   <input
-                    type="text"
-                    name="name"
-                    placeholder="Full Name"
-                    value={formData.name}
+                    type="email"
+                    name="email"
+                    placeholder="Email Address"
+                    value={formData.email}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
-                  <input
-                    type="text"
-                    name="mobileno"
-                    placeholder="Mobile Number"
-                    value={formData.mobileno}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      placeholder="Password"
+                      value={formData.password}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <span
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
+                    >
+                      {showPassword ? "🙈" : "👁️"}
+                    </span>
+                  </div>
+
+                  {isSignUp && (
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        name="confirmPassword"
+                        placeholder="Confirm Password"
+                        value={formData.confirmPassword}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
+                      />
+                    </div>
+                  )}
+                  {/* CAPTCHA */}{" "}
+                  {isSignUp && (
+                    <ReCAPTCHA
+                      sitekey="6LcYZV4rAAAAAJh8mKaMn5sLQhCtMx5ijeXGJtRO"
+                      onChange={handleCaptcha}
+                    />
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    type="submit"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 font-semibold rounded-lg transition"
+                  >
+                    {isSignUp ? "Sign Up" : "Login"}
+                  </motion.button>
                 </>
               )}
-
-              <input
-                type="email"
-                name="email"
-                placeholder="Email Address"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-
-              {/* Password Field with Eye Icon */}
-              <div className="relative">
-                <input
-                  type={showPassword ? "text" : "password"}
-                  name="password"
-                  placeholder="Password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <span
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
-                >
-                  {showPassword ? "🙈" : "👁️"}
-                </span>
-              </div>
-
-              {/* Confirm Password Field */}
-              {isSignUp && (
-                <div className="relative">
-                  <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border rounded-lg pr-10 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <span
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
-                  >
-                    {showConfirmPassword ? "" : ""}
-                  </span>
-                </div>
-              )}
-
-              {/* CAPTCHA */}
-              {isSignUp && (
-                <ReCAPTCHA
-                  sitekey="6LcYZV4rAAAAAJh8mKaMn5sLQhCtMx5ijeXGJtRO"
-                  onChange={handleCaptcha}
-                />
-              )}
-
-              {/* Submit Button */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 font-semibold rounded-lg transition"
-              >
-                {isSignUp ? "Sign Up" : "Login"}
-              </motion.button>
             </form>
 
-            {!isSignUp && (
-              <p className="text-sm text-center text-indigo-600 mt-4 hover:underline cursor-pointer">
+            {!isForgot && !isSignUp && (
+              <p
+                className="text-sm text-center text-indigo-600 mt-4 hover:underline cursor-pointer"
+                onClick={() => setIsForgot(true)}
+              >
                 Forgotten password?
               </p>
             )}
@@ -249,13 +439,34 @@ const LoginPage = () => {
             <hr className="my-6" />
 
             <p className="text-center text-sm">
-              {isSignUp ? "Already have an account?" : "Don't have an account?"}{" "}
-              <span
-                onClick={() => setIsSignUp(!isSignUp)}
-                className="text-indigo-700 font-semibold cursor-pointer hover:underline"
-              >
-                {isSignUp ? "Login here" : "Create New Account"}
-              </span>
+              {isForgot ? (
+                <span
+                  onClick={() => setIsForgot(false)}
+                  className="text-indigo-700 font-semibold cursor-pointer hover:underline"
+                >
+                  Back to Login
+                </span>
+              ) : isSignUp ? (
+                <>
+                  Already have an account?{" "}
+                  <span
+                    onClick={() => setIsSignUp(false)}
+                    className="text-indigo-700 font-semibold cursor-pointer hover:underline"
+                  >
+                    Login here
+                  </span>
+                </>
+              ) : (
+                <>
+                  Don’t have an account?{" "}
+                  <span
+                    onClick={() => setIsSignUp(true)}
+                    className="text-indigo-700 font-semibold cursor-pointer hover:underline"
+                  >
+                    Create New Account
+                  </span>
+                </>
+              )}
             </p>
           </motion.div>
         </AnimatePresence>

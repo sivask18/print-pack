@@ -18,17 +18,32 @@ const ContactUS = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setIsSubmitting(true);
 
-    setTimeout(() => {
+  try {
+    const response = await fetch("http://localhost:5000/send-email", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
       alert("Message sent successfully!");
-      console.log("Form Data:", formData);    // Here you would typically send the form data to your server
       setFormData({ name: "", email: "", message: "" });
-      setIsSubmitting(false);
-    }, 1500);
-  };
+    } else {
+      alert("Failed to send message. Please try again later.");
+    }
+  } catch (error) {
+    alert("Error sending message. Check your network or server.");
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+
 
   return (
     <div className="bg-gray-100 py-12 px-4 md:px-20 min-h-screen">
