@@ -50,7 +50,7 @@ const NavBar = () => {
 
         {/* Hamburger Menu Button - Mobile */}
         <button
-          className="md:hidden flex items-center text-gray-700 hover:text-indigo-600 focus:outline-none"
+          className="sm:hidden flex items-center text-gray-700 hover:text-indigo-600 focus:outline-none"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
