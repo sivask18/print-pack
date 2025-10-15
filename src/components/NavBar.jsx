@@ -51,7 +51,7 @@ const NavBar = () => {
         {/* Hamburger Menu Button - Mobile */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="lg:hidden p-2 hover:bg-gray-100 rounded-md transition-colors duration-200"
+          className="md:hidden p-2 hover:bg-gray-100 rounded-md transition-colors duration-200"
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle mobile menu"
         >
@@ -62,8 +62,8 @@ const NavBar = () => {
           )}
         </button>
 
-        {/* Navigation Menu - Desktop/Tablet */}
-        <nav className="hidden lg:flex flex-1 justify-center items-center space-x-8 xl:space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
+        {/* Navigation Menu - Desktop/Tablet/Laptop */}
+        <nav className="hidden md:flex flex-1 justify-center items-center space-x-8 xl:space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
           <NavLink
             to="/"
             className={({ isActive }) =>
