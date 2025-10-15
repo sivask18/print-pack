@@ -1,11 +1,10 @@
 import React, { useEffect, useState, useRef } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { UserCircleIcon, ChevronDownIcon, Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { UserCircleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 
 const NavBar = () => {
   const [user, setUser] = useState(null);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
@@ -48,22 +47,8 @@ const NavBar = () => {
           PrintPack
         </h1>
 
-        {/* Hamburger Menu Button - Mobile */}
-        <button
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 hover:bg-gray-100 rounded-md transition-colors duration-200"
-          aria-expanded={mobileMenuOpen}
-          aria-label="Toggle mobile menu"
-        >
-          {mobileMenuOpen ? (
-            <XMarkIcon className="h-6 w-6 text-gray-700" />
-          ) : (
-            <Bars3Icon className="h-6 w-6 text-gray-700" />
-          )}
-        </button>
-
-        {/* Navigation Menu - Desktop/Tablet/Laptop */}
-        <nav className="hidden md:flex flex-1 justify-center items-center space-x-8 xl:space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
+        {/* Navigation Menu */}
+        <nav className="flex flex-1 justify-center items-center space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -109,128 +94,43 @@ const NavBar = () => {
           </NavLink>
         </nav>
 
-        {/* Mobile Navigation Menu */}
-        {mobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 right-0 bg-white border-b border-gray-200 shadow-lg z-40">
-            <nav className="flex flex-col px-6 py-4 space-y-4" aria-label="Mobile navigation">
-              <NavLink
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `font-semibold transition-colors duration-200 py-2 ${
-                    isActive ? "text-indigo-600" : "text-gray-700 hover:text-indigo-600"
-                  }`
-                }
-              >
-                Home
-              </NavLink>
+        {/* ✅ Login or User Dropdown - Right Corner */}
+        {!user ? (
+          <NavLink
+            to="/login"
+            className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-50"
+          >
+            Login
+          </NavLink>
+        ) : (
+          <div className="relative" ref={dropdownRef}>
+            {/* Profile Button */}
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center space-x-3 font-semibold text-gray-900 hover:text-indigo-600 focus:outline-none transition-colors duration-200"
+              aria-expanded={dropdownOpen}
+              aria-haspopup="menu"
+              aria-label={`Account menu for ${user?.name || user?.email}`}
+            >
+              <UserCircleIcon className="h-6 w-6" aria-hidden="true" />
+              <span>{user.name || user.email}</span>
+              <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
+            </button>
 
-              <NavLink
-                to="/about"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `font-semibold transition-colors duration-200 py-2 ${
-                    isActive ? "text-indigo-600" : "text-gray-700 hover:text-indigo-600"
-                  }`
-                }
-              >
-                About
-              </NavLink>
-
-              <NavLink
-                to="/services"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `font-semibold transition-colors duration-200 py-2 ${
-                    isActive ? "text-indigo-600" : "text-gray-700 hover:text-indigo-600"
-                  }`
-                }
-              >
-                Services
-              </NavLink>
-
-              <NavLink
-                to="/contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className={({ isActive }) =>
-                  `font-semibold transition-colors duration-200 py-2 ${
-                    isActive ? "text-indigo-600" : "text-gray-700 hover:text-indigo-600"
-                  }`
-                }
-              >
-                Contact
-              </NavLink>
-
-              {/* Mobile Auth Section */}
-              <div className="border-t border-gray-200 pt-4 mt-4">
-                {!user ? (
-                  <NavLink
-                    to="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block w-full text-center text-indigo-600 font-semibold hover:text-indigo-700 transition-colors duration-200 py-2"
-                  >
-                    Login
-                  </NavLink>
-                ) : (
-                  <div className="flex flex-col space-y-2">
-                    <span className="text-sm text-gray-600 font-medium">
-                      {user.name || user.email}
-                    </span>
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="text-gray-700 hover:text-indigo-600 transition-colors duration-200 py-2 text-left font-semibold"
-                    >
-                      Logout
-                    </button>
-                  </div>
-                )}
+            {/* Dropdown Menu */}
+            {dropdownOpen && (
+              <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg" role="menu">
+                <button
+                  onClick={handleLogout}
+                  className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
+                  role="menuitem"
+                >
+                  Logout
+                </button>
               </div>
-            </nav>
+            )}
           </div>
         )}
-
-        {/* ✅ Login or User Dropdown - Desktop/Tablet Right Corner */}
-        <div className="hidden lg:block">
-          {!user ? (
-            <NavLink
-              to="/login"
-              className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors duration-200 px-4 py-2 rounded-lg hover:bg-gray-50"
-            >
-              Login
-            </NavLink>
-          ) : (
-            <div className="relative" ref={dropdownRef}>
-              {/* Profile Button */}
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-3 font-semibold text-gray-900 hover:text-indigo-600 focus:outline-none transition-colors duration-200"
-                aria-expanded={dropdownOpen}
-                aria-haspopup="menu"
-                aria-label={`Account menu for ${user?.name || user?.email}`}
-              >
-                <UserCircleIcon className="h-6 w-6" aria-hidden="true" />
-                <span>{user.name || user.email}</span>
-                <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
-              </button>
-
-              {/* Dropdown Menu */}
-              {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg" role="menu">
-                  <button
-                    onClick={handleLogout}
-                    className="block w-full text-left px-4 py-3 text-gray-700 hover:bg-gray-100 transition-colors duration-200"
-                    role="menuitem"
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
       </div>
     </header>
   );
