@@ -50,7 +50,7 @@ const NavBar = () => {
 
         {/* Hamburger Menu Button - Mobile */}
         <button
-          className="sm:hidden flex items-center text-gray-700 hover:text-indigo-600 focus:outline-none"
+          className="md:hidden flex items-center text-gray-700 hover:text-indigo-600 focus:outline-none"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-expanded={mobileMenuOpen}
           aria-label="Toggle menu"
@@ -58,8 +58,8 @@ const NavBar = () => {
           <Bars3Icon className="h-6 w-6" />
         </button>
 
-        {/* Navigation Menu - Desktop */}
-        <nav className="hidden md:flex flex-1 justify-center items-center space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
+        {/* Navigation Menu - Desktop and Laptop */}
+        <nav className="hidden md:flex flex-1 justify-center items-center space-x-8 lg:space-x-12 text-sm font-medium text-gray-700" aria-label="Main navigation">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -105,7 +105,7 @@ const NavBar = () => {
           </NavLink>
         </nav>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Navigation Menu - Small screens only */}
         {mobileMenuOpen && (
           <nav className="md:hidden absolute top-full left-0 right-0 bg-white shadow-lg border-t border-gray-200 py-4 px-6 z-40 flex flex-col space-y-4">
             <NavLink
@@ -176,7 +176,7 @@ const NavBar = () => {
           </nav>
         )}
 
-        {/* ✅ Login or User Dropdown - Desktop Right Corner */}
+        {/* ✅ Login or User Dropdown - Desktop and Laptop Right Corner */}
         <div className="hidden md:block">
           {!user ? (
             <NavLink
