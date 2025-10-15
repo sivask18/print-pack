@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { PhoneIcon } from "@heroicons/react/24/outline";
 import { products } from "../productConfig";
 
 
@@ -23,15 +24,23 @@ const HeroSection = () => {
             PrintPack is your trusted partner for printing machine sales, press consulting, and expert servicing. We deliver excellence in every product — from calendars to eco-friendly bags.
           </p>
           <div className="flex justify-center md:justify-start gap-4">
-            {/* <button className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow hover:bg-indigo-700 transition">
-              Get Free Consultation
-            </button> */}
-            <button
+            <motion.button
               className="px-6 py-3 border border-indigo-600 text-indigo-600 font-semibold rounded-lg hover:bg-indigo-50 transition"
               onClick={() => setModalOpen(true)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
               View Our Products
-            </button>
+            </motion.button>
+            <motion.button
+              className="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 transition flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => window.location.href = 'tel:+91-9876543210'}
+            >
+              <PhoneIcon className="w-5 h-5" />
+              Get Consultation
+            </motion.button>
           </div>
         </motion.div>
 
@@ -142,7 +151,7 @@ const HeroSection = () => {
               </div>
 
               {/* Product Details Modal */}
-              {Object.entries(showDetails).find(([_, shown]) => shown) && (
+              {Object.entries(showDetails).find(([, shown]) => shown) && (
                 <div className="fixed inset-0 bg-black/50 backdrop-blur-lg flex items-center justify-center z-50" onClick={() => setShowDetails({})}>
                   <div className="bg-white rounded-lg max-w-2xl w-full m-4 p-6" onClick={(e) => e.stopPropagation()}>
                     {(() => {

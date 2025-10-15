@@ -29,6 +29,20 @@ app.post("/register", async (req, res) => {
     if (password !== confirmPassword)
       return res.status(400).json({ error: "Passwords do not match" });
 
+    // Check if email already exists
+    const emailCheckQuery = "SELECT * FROM public.cust_table WHERE email = $1";
+    const emailResult = await pool.query(emailCheckQuery, [email]);
+    if (emailResult.rows.length > 0) {
+      return res.status(409).json({ message: "This email address is already registered. Please try logging in with this email." });
+    }
+
+    // Check if mobile number already exists
+    const mobileCheckQuery = "SELECT * FROM public.cust_table WHERE mobileno = $1";
+    const mobileResult = await pool.query(mobileCheckQuery, [mobileno]);
+    if (mobileResult.rows.length > 0) {
+      return res.status(409).json({ message: "This mobile number is already registered. Please try logging in." });
+    }
+
     const insertQuery = `
       INSERT INTO public.cust_table (name, mobileno, email, password, confirmPassword)
       VALUES ($1, $2, $3, $4, $5)

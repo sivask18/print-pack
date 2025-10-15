@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ReCAPTCHA from "react-google-recaptcha";
+import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -17,13 +18,14 @@ const LoginPage = () => {
   const [otp, setOtp] = useState("");
   const [captchaToken, setCaptchaToken] = useState(null);
   const [otpSent, setOtpSent] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [changePasswordForm, setChangePasswordForm] = useState(false);
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmResetPassword, setConfirmResetPassword] = useState("");
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmResetPassword, setShowConfirmResetPassword] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -191,9 +193,10 @@ const LoginPage = () => {
             password: "",
             confirmPassword: "",
           });
+          setCaptchaToken(null); // Reset CAPTCHA
           setIsSignUp(false);
         } else {
-          alert(result.message || "Something went wrong.");
+          alert(result.message || result.error || "Something went wrong.");
         }
       } catch (err) {
         alert("Server error. Please try again later.");
@@ -316,27 +319,74 @@ const LoginPage = () => {
                 } else if (changePasswordForm) {
                   return (
                     <>
-                      <input
-                        type="password"
-                        placeholder="Old Password"
-                        value={oldPassword}
-                        onChange={(e) => setOldPassword(e.target.value)}
-                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      />
-                      <input
-                        type="password"
-                        placeholder="New Password"
-                        value={newPassword}
-                        onChange={(e) => setNewPassword(e.target.value)}
-                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      />
-                      <input
-                        type="password"
-                        placeholder="Confirm New Password"
-                        value={confirmResetPassword}
-                        onChange={(e) => setConfirmResetPassword(e.target.value)}
-                        className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
-                      />
+                      {/* Old Password */}
+                      <div className="relative">
+                        <input
+                          type={showOldPassword ? "text" : "password"}
+                          placeholder="Old Password"
+                          value={oldPassword}
+                          onChange={(e) => setOldPassword(e.target.value)}
+                          className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowOldPassword(!showOldPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showOldPassword ? (
+                            <EyeSlashIcon className="w-5 h-5" />
+                          ) : (
+                            <EyeIcon className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* New Password */}
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          placeholder="New Password"
+                          value={newPassword}
+                          onChange={(e) => setNewPassword(e.target.value)}
+                          className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showNewPassword ? (
+                            <EyeSlashIcon className="w-5 h-5" />
+                          ) : (
+                            <EyeIcon className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+
+                      {/* Confirm Password */}
+                      <div className="relative">
+                        <input
+                          type={showConfirmResetPassword ? "text" : "password"}
+                          placeholder="Confirm New Password"
+                          value={confirmResetPassword}
+                          onChange={(e) => setConfirmResetPassword(e.target.value)}
+                          className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setShowConfirmResetPassword(!showConfirmResetPassword)
+                          }
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                        >
+                          {showConfirmResetPassword ? (
+                            <EyeSlashIcon className="w-5 h-5" />
+                          ) : (
+                            <EyeIcon className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+
                       <motion.button
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
@@ -371,6 +421,7 @@ const LoginPage = () => {
                       />
                     </>
                   )}
+
                   <input
                     type="email"
                     name="email"
@@ -379,42 +430,36 @@ const LoginPage = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
                   />
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      name="password"
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
-                    />
-                    <span
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-gray-500"
-                    >
-                      {showPassword ? "🙈" : "👁️"}
-                    </span>
-                  </div>
 
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="Password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                  />
+
+                  {/* Confirm Password Field */}
                   {isSignUp && (
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        placeholder="Confirm Password"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border rounded-lg pr-10 focus:ring-2 focus:ring-indigo-500"
-                      />
-                    </div>
+                    <input
+                      type="password"
+                      name="confirmPassword"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500"
+                    />
                   )}
-                  {/* CAPTCHA */}{" "}
+
+                  {/* CAPTCHA */}
                   {isSignUp && (
                     <ReCAPTCHA
                       sitekey="6LcYZV4rAAAAAJh8mKaMn5sLQhCtMx5ijeXGJtRO"
                       onChange={handleCaptcha}
                     />
                   )}
+
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -463,7 +508,7 @@ const LoginPage = () => {
                     onClick={() => setIsSignUp(true)}
                     className="text-indigo-700 font-semibold cursor-pointer hover:underline"
                   >
-                    Create New Account
+                    Sign up
                   </span>
                 </>
               )}
