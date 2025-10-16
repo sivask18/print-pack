@@ -42,9 +42,9 @@ const NavBar = () => {
         <h1
           className="text-3xl font-bold text-gray-900 cursor-pointer"
           onClick={() => navigate("/")}
-          aria-label="PrintPack Home"
+          aria-label="Printomax Home"
         >
-          PrintPack
+          Printomax
         </h1>
 
         {/* Navigation Menu */}

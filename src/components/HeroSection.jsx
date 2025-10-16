@@ -21,7 +21,7 @@ const HeroSection = () => {
             Quality <span className="text-indigo-600">Printing Machines</span> & Services
           </h2>
           <p className="text-lg text-gray-600 mb-6">
-            PrintPack is your trusted partner for printing machine sales, press consulting, and expert servicing. We deliver excellence in every product — from calendars to eco-friendly bags.
+            Printomax is your trusted partner for printing machine sales, press consulting, and expert servicing. We deliver excellence in every product — from calendars to eco-friendly bags.
           </p>
           <div className="flex justify-center md:justify-start gap-4">
             <motion.button

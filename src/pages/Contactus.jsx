@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import ReCAPTCHA from "react-google-recaptcha";
+import { useNavigate } from "react-router-dom";
 
 const ContactUS = () => {
+  const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -10,6 +11,14 @@ const ContactUS = () => {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -19,30 +28,37 @@ const ContactUS = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setIsSubmitting(true);
-
-  try {
-    const response = await fetch("http://localhost:5000/send-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await response.json();
-
-    if (data.success) {
-      alert("Message sent successfully!");
-      setFormData({ name: "", email: "", message: "" });
-    } else {
-      alert("Failed to send message. Please try again later.");
+    if (!user) {
+      alert("You must be logged in to send a message. Please login to your account.");
+      navigate("/login");
+      return;
     }
-  } catch (error) {
-    alert("Error sending message. Check your network or server.");
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("http://localhost:5000/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Message sent successfully!");
+        setFormData({ name: "", email: "", message: "" });
+      } else {
+        alert("Failed to send message. Please try again later.");
+      }
+    } catch (err) {
+      console.error("Error sending message:", err);
+      alert("Error sending message. Check your network or server.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   return (
@@ -81,8 +97,7 @@ const ContactUS = () => {
         </h3>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <motion.input
-            whileFocus={{ scale: 1.02 }}
+          <input
             type="text"
             name="name"
             placeholder="Your Name"
@@ -92,8 +107,7 @@ const ContactUS = () => {
             className="w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
-          <motion.input
-            whileFocus={{ scale: 1.02 }}
+          <input
             type="email"
             name="email"
             placeholder="Your Email"
@@ -103,8 +117,7 @@ const ContactUS = () => {
             className="w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
           />
 
-          <motion.textarea
-            whileFocus={{ scale: 1.02 }}
+          <textarea
             name="message"
             placeholder="Your Message"
             value={formData.message}
@@ -112,7 +125,7 @@ const ContactUS = () => {
             required
             rows="4"
             className="w-full px-4 py-3 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-          />
+          ></textarea>
 
           <motion.button
             whileHover={{ scale: 1.05 }}

@@ -13,7 +13,7 @@ const Footer = () => {
       <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
         {/* Company Info */}
         <div className="text-center md:text-left">
-          <h2 className="text-2xl font-bold mb-2">PrintPack</h2>
+          <h2 className="text-2xl font-bold mb-2">Printomax</h2>
           <p className="text-sm text-gray-200">
             Serving quality and trust in printing solutions across industries.
           </p>
@@ -64,7 +64,7 @@ const Footer = () => {
 
         {/* Copyright */}
         <div className="text-center md:text-right">
-          <p className="text-sm text-gray-200">© 2025 PrintPack. All Rights Reserved.</p>
+          <p className="text-sm text-gray-200">© 2025 Printomax. All Rights Reserved.</p>
         </div>
       </div>
     </motion.footer>

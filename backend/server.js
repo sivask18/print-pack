@@ -13,7 +13,7 @@ app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE"] }));
 
 // ✅ Default route
 app.get("/", (req, res) => {
-  res.send("✅ PrintPack backend running successfully 🚀");
+  res.send("✅ Printomax backend running successfully 🚀");
 });
 
 // =============================
@@ -124,15 +124,15 @@ app.post("/send-otp", async (req, res) => {
     global.otpStorage[email] = otp;
 
     const mailOptions = {
-      from: `"PrintPack Support" <${process.env.EMAIL_USER}>`,
+      from: `"Printomax Support" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "🔐 Your OTP for Password Reset",
       html: `
-        <h2>🔐 PrintPack Password Reset</h2>
+        <h2>🔐 Printomax Password Reset</h2>
         <p>Your OTP code is:</p>
         <h1 style="color:#007bff;">${otp}</h1>
         <p>This OTP will expire in 5 minutes.</p>
-        <p>Thank you,<br><strong>PrintPack Team</strong></p>
+        <p>Thank you,<br><strong>Printomax Team</strong></p>
       `,
     };
 
@@ -173,16 +173,16 @@ app.post("/verify-otp", async (req, res) => {
 
     // Send password via email
     const mailOptions = {
-      from: `"PrintPack Support" <${process.env.EMAIL_USER}>`,
+      from: `"Printomax Support" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "🔐 Your Forgotten Password",
       html: `
         <h2>🔐 Your Password</h2>
         <p>Hello,</p>
-        <p>You requested your password from PrintPack. Here it is:</p>
+        <p>You requested your password from Printomax. Here it is:</p>
         <p><strong>Password: ${password}</strong></p>
         <p>For security reasons, please consider changing your password after logging in.</p>
-        <p>Thank you,<br><strong>PrintPack Team</strong></p>
+        <p>Thank you,<br><strong>Printomax Team</strong></p>
       `,
     };
 
@@ -223,16 +223,16 @@ app.post("/reset-password", async (req, res) => {
 
     // ✅ Send confirmation email
     const mailOptions = {
-      from: `"PrintPack Support" <${process.env.EMAIL_USER}>`,
+      from: `"Printomax Support" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "✅ Your PrintPack Password Has Been Updated",
+      subject: "✅ Your Printomax Password Has Been Updated",
       html: `
         <h2>✅ Password Update Successful</h2>
         <p>Hello,</p>
-        <p>Your password for your PrintPack account has been successfully updated.</p>
+        <p>Your password for your Printomax account has been successfully updated.</p>
         <p>If you didn’t make this change, please contact our support team immediately.</p>
         <br/>
-        <p>Regards,<br><strong>PrintPack Support</strong></p>
+        <p>Regards,<br><strong>Printomax Support</strong></p>
       `,
     };
 
@@ -257,7 +257,7 @@ app.post("/send-email", async (req, res) => {
 
   try {
     const mailOptions = {
-      from: `"PrintPack Contact" <${process.env.EMAIL_USER}>`,
+      from: `"Printomax Contact" <${process.env.EMAIL_USER}>`,
       to: process.env.SUPPORT_EMAIL || process.env.EMAIL_USER,
       subject: `New Contact Message from ${name}`,
       html: `
@@ -267,7 +267,7 @@ app.post("/send-email", async (req, res) => {
         <p><strong>Message:</strong></p>
         <p>${message.replace(/\n/g, "<br>")}</p>
         <br/>
-        <p>Regards,<br><strong>PrintPack</strong></p>
+        <p>Regards,<br><strong>Printomax</strong></p>
       `,
     };
 
@@ -287,9 +287,9 @@ app.post("/send-email", async (req, res) => {
 app.get("/test-email", async (req, res) => {
   try {
     const mailOptions = {
-      from: `"PrintPack Test" <${process.env.EMAIL_USER}>`,
+      from: `"Printomax Test" <${process.env.EMAIL_USER}>`,
       to: process.env.SUPPORT_EMAIL || process.env.EMAIL_USER,
-      subject: "Test Email from PrintPack Server",
+      subject: "Test Email from Printomax Server",
       text: "This is a test email to verify mail functionality.",
     };
 

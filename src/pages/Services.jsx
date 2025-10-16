@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 
 const Services = () => {
   return (
-    <div className="py-12 px-4 md:px-20 bg-white min-h-screen">
+    <div className="py-12 px-4 md:px-20 bg-gray-50 min-h-screen">
       <motion.h2
         className="text-4xl font-bold text-indigo-700 text-center mb-6"
         initial={{ opacity: 0, y: -40 }}
@@ -19,11 +19,11 @@ const Services = () => {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3, duration: 0.6 }}
       >
-        At <strong>PrintPack</strong>, we offer a wide range of services tailored to meet the growing demands of the printing industry. With decades of experience and a commitment to excellence, we ensure quality solutions that support the success of printing businesses across India.
+        At <strong>Printomax</strong>, we offer a wide range of services tailored to meet the growing demands of the printing industry. With decades of experience and a commitment to excellence, we ensure quality solutions that support the success of printing businesses across India.
       </motion.p>
 
       <motion.div
-        className="grid md:grid-cols-2 gap-10"
+        className="grid md:grid-cols-2 gap-10 items-start"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -31,7 +31,7 @@ const Services = () => {
       >
         {/* Service 1 */}
         <motion.div
-          className="bg-gray-100 rounded-xl shadow-md p-6"
+          className="bg-white rounded-xl shadow-md p-6"
           variants={{
             hidden: { opacity: 0, y: 30 },
             visible: { opacity: 1, y: 0 },
@@ -47,7 +47,7 @@ const Services = () => {
 
         {/* Service 2 */}
         <motion.div
-          className="bg-gray-100 rounded-xl shadow-md p-6"
+          className="bg-white rounded-xl shadow-md p-6"
           variants={{
             hidden: { opacity: 0, y: 30 },
             visible: { opacity: 1, y: 0 },
@@ -62,7 +62,7 @@ const Services = () => {
 
         {/* Service 3 */}
         <motion.div
-          className="bg-gray-100 rounded-xl shadow-md p-6"
+          className="bg-white rounded-xl shadow-md p-6"
           variants={{
             hidden: { opacity: 0, y: 30 },
             visible: { opacity: 1, y: 0 },
@@ -78,7 +78,7 @@ const Services = () => {
 
         {/* Service 4 */}
         <motion.div
-          className="bg-gray-100 rounded-xl shadow-md p-6"
+          className="bg-white rounded-xl shadow-md p-6"
           variants={{
             hidden: { opacity: 0, y: 30 },
             visible: { opacity: 1, y: 0 },
@@ -86,7 +86,7 @@ const Services = () => {
         >
           <h3 className="text-xl font-semibold text-indigo-600 mb-2">Printing Product Delivery</h3>
           <p className="text-gray-700 leading-relaxed">
-            We now deliver quality-printed products such as <strong>Calendars</strong>, 
+            We now deliver quality-printed products such as <strong>Calendars</strong>,
             <strong> Notebooks</strong>, <strong> Diaries</strong>, and <strong>Eco-friendly
             packaging bags</strong> at affordable prices. All products are custom-designed and
             delivered based on your order needs.
