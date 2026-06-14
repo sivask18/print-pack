@@ -20,6 +20,16 @@ const ContactUS = () => {
     }
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        name: user.name || prev.name,
+        email: user.email || prev.email,
+      }));
+    }
+  }, [user]);
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,

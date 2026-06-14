@@ -1,17 +1,25 @@
 import React from "react";
 import { motion } from "framer-motion";
+import SEO from "../components/SEO";
 
 const About = () => {
   return (
     <div className="py-12 px-4 md:px-20 bg-gray-50 min-h-screen">
-      <motion.h2
+      <SEO
+        title="About Us — Trusted Printing Press Experts Since 1990"
+        description="Founded in 1990 in Sivakasi, Sri Kanagalakshmi Lathe Works (Printomax) blends tradition with technology to deliver reliable printing machinery, Mitsubishi press servicing and consulting."
+        keywords="about Printomax, Sri Kanagalakshmi Lathe Works, Sivakasi printing company, printing press servicing experts, Mitsubishi press repair"
+        path="/about"
+      />
+      <motion.h1
         className="text-4xl font-bold text-indigo-700 text-center mb-6"
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        About Us
-      </motion.h2>
+        About Printomax — Printing Machinery & Press Servicing
+      </motion.h1>
+
 
       <motion.p
         className="text-lg text-gray-700 text-center max-w-4xl mx-auto mb-10 leading-relaxed"

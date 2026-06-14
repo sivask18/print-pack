@@ -1,0 +1,66 @@
+/* NavBar.css - plain CSS, no Tailwind */
+
+/* Reset-ish */
+.nm-header { width: 100%; background: #fff; border-bottom: 1px solid #e5e7eb; position: sticky; top: 0; z-index: 60; }
+.nm-container { max-width: 1200px; margin: 0 auto; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+
+/* Logo */
+.nm-logo { margin: 0; font-size: 1.25rem; font-weight: 700; color: #111827; cursor: pointer; }
+
+/* Center nav */
+.nm-center { display: flex; gap: 28px; align-items: center; }
+.nm-link { text-decoration: none; color: #374151; font-weight: 600; }
+.nm-link:hover { color: #4f46e5; }
+
+/* Right area */
+.nm-right { display: flex; align-items: center; gap: 12px; }
+.nm-login { color: #4f46e5; font-weight: 700; text-decoration: none; padding: 6px 10px; border-radius: 6px; }
+.nm-logout { background: transparent; border: none; color: #111827; font-weight: 700; cursor: pointer; }
+
+/* Profile section */
+.nm-profile { position: relative; }
+.nm-profile-btn { display: flex; align-items: center; gap: 8px; background: transparent; border: none; color: #111827; font-weight: 600; cursor: pointer; padding: 8px 12px; border-radius: 6px; transition: all 0.2s ease; }
+.nm-profile-btn:hover { background: #f3f4f6; }
+.nm-profile-icon { width: 24px; height: 24px; color: #4f46e5; }
+.nm-profile-name { font-size: 14px; }
+.nm-chevron { width: 16px; height: 16px; transition: transform 0.2s ease; }
+.nm-chevron.open { transform: rotate(180deg); }
+
+/* Dropdown menu */
+.nm-dropdown { position: absolute; top: 100%; right: 0; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); min-width: 120px; z-index: 50; margin-top: 4px; }
+.nm-dropdown-item { background: transparent; border: none; color: #111827; font-weight: 600; cursor: pointer; padding: 12px 16px; width: 100%; text-align: left; font-size: 14px; }
+.nm-dropdown-item:hover { background: #f3f4f6; }
+.nm-dropdown-item:first-child { border-top-left-radius: 6px; border-top-right-radius: 6px; }
+.nm-dropdown-item:last-child { border-bottom-left-radius: 6px; border-bottom-right-radius: 6px; }
+
+/* Hamburger button */
+.nm-hamb { display: none; width: 40px; height: 32px; background: transparent; border: none; cursor: pointer; padding: 6px; position: relative; }
+.nm-hamb span { display: block; height: 2px; width: 20px; background: #111827; margin: 4px 0; transition: all 0.2s ease; }
+
+/* Mobile dropdown (hidden by default) */
+.nm-mobile { display: none; flex-direction: column; gap: 12px; padding: 12px 20px; border-top: 1px solid #e5e7eb; background: #fff; }
+
+/* Mobile profile */
+.nm-mobile-profile { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #e5e7eb; padding-top: 12px; margin-top: 12px; }
+.nm-mobile-profile-info { display: flex; align-items: center; gap: 8px; }
+.nm-mobile-profile-name { font-weight: 600; color: #111827; font-size: 16px; }
+
+/* Responsive rules */
+@media (max-width: 767px) {
+  .nm-container { padding: 10px 16px; }
+  .nm-center { display: none; }       /* hide center links on mobile */
+  .nm-hamb { display: inline-flex; }  /* show hamburger */
+  .nm-right { gap: 8px; }
+
+  /* when menu open show nav */
+  .nm-mobile.open { display: flex; }
+  .nm-hamb.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+  .nm-hamb.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+  .nm-hamb.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+}
+
+/* Desktop behavior (wide screens) */
+@media (min-width: 768px) {
+  .nm-mobile { display: none !important; }
+  .nm-hamb { display: none; }
+}
